@@ -4,6 +4,8 @@ import styled from "styled-components";
 function UploadSite() {
   const [selectedFile, setSelectedFile] = useState();
   const [isFilePicked, setIsFilePicked] = useState(false);
+  const [gender, setGender] = useState();
+  const [probablility, setProbability] = useState();
 
   const changeHandler = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -47,10 +49,10 @@ function UploadSite() {
         {isFilePicked ? (
           <FileData>
             <p>
-              <strong>Filename:</strong> {selectedFile.name}
+              <b>Filename:</b> {selectedFile.name}
             </p>
             <p>
-              <strong>Filetype:</strong> {selectedFile.type}
+              <b>Filetype:</b> {selectedFile.type}
             </p>
 
             <Submit onClick={handleSubmission}>Submit</Submit>
