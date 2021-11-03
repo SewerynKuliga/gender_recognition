@@ -7,12 +7,12 @@ import ContactSite from './Sites/ConcactSite/ContactSite';
 import MainSite from './Sites/MainSite.js/MainSite';
 
 
-function App() {
 
+function App() {
   return (
     <Body>
       <Header></Header>
-            <Title>GENDER RECOGNITION</Title>
+      <Title>GENDER RECOGNITION</Title>
       <Router>
         <Switch>
           <Route path='/' exact component={MainSite} />
