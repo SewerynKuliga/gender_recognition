@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
+import { AudioFile } from "../../Contexts/AudioFile";
+import PopupFailFetch from "../Popup/PopupFailFetch";
+import PopupInfo from "../Popup/PopupInfo";
 
 function UploadSite() {
-  const [selectedFile, setSelectedFile] = useState();
+  const { selectedFile, setSelectedFile } = useContext(AudioFile);
   const [isFilePicked, setIsFilePicked] = useState(false);
   const [gender, setGender] = useState();
   const [probablility, setProbability] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+  const [infoMessage, setInfoMessage] = useState(false);
+  const [errorInfoMessage, setErrorInfoMessage] = useState(false);
 
   const changeHandler = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -16,18 +22,30 @@ function UploadSite() {
     const formData = new FormData();
 
     formData.append("audioFile", selectedFile);
-
-    fetch("https://enigmatic-badlands-41342.herokuapp.com/v1.0/recognition", {
-      method: "POST",
-      body: formData,
-    })
+    const as = fetch(
+      "https://enigmatic-badlands-41342.herokuapp.com/v1.0/recognition",
+      {
+        method: "POST",
+        body: formData,
+      }
+    )
       .then((response) => response.json())
       .then((result) => {
+        setGender(result.class);
+        setProbability(result.probability);
+        setErrorMessage(result.detail);
         console.log(result);
+        result.status === 415
+          ? setErrorInfoMessage(true)
+          : setInfoMessage(true);
       })
       .catch((error) => {
         console.log(error);
       });
+
+    if (as.status === 200) {
+      setInfoMessage(true);
+    }
   };
 
   return (
@@ -54,7 +72,6 @@ function UploadSite() {
             <p>
               <b>Filetype:</b> {selectedFile.type}
             </p>
-
             <Submit onClick={handleSubmission}>Submit</Submit>
           </FileData>
         ) : (
@@ -63,7 +80,17 @@ function UploadSite() {
           </FileData>
         )}
       </FilePlace>
-
+      <PopupInfo
+        trigger={infoMessage}
+        setTrigger={setInfoMessage}
+        gender={gender}
+        probablility={probablility}
+      />
+      <PopupFailFetch
+        trigger={errorInfoMessage}
+        setTrigger={setErrorInfoMessage}
+        errorMessage={errorMessage}
+      />
       {/* <DataFetching /> */}
     </div>
   );
