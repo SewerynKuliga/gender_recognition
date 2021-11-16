@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+// import { AudioFile } from "../../Contexts/AudioFile";
+import ReactPlayer from "react-player";
+
 // import Napotem from "./Napotem";
 // import styled from "styled-components";
 // import useRecorder from "./useRecorder";
@@ -7,14 +10,19 @@ import { ReactMic } from "react-mic";
 function RecordSite() {
   // const [audioURL, isRecording, startRecording, stopRecording] = useRecorder();
   const [record, setRecord] = useState(false);
+  const [selectedFile, setSelectedFile] = useState();
+  const [sound, setSound] = useState(null);
 
   const startRecording = () => {
     setRecord(true);
+    setTimeout(() => {
+      setRecord(false);
+    }, 3500);
   };
 
-  const stopRecording = () => {
-    setRecord(false);
-  };
+  // const stopRecording = () => {
+  //   setRecord(false);
+  // };
 
   function onData(recordedBlob) {
     console.log("chunk of real-time data is: ", recordedBlob);
@@ -22,7 +30,28 @@ function RecordSite() {
 
   function onStop(recordedBlob) {
     console.log("recordedBlob is: ", recordedBlob);
+
+    const url = URL.createObjectURL(recordedBlob.blob);
+    setSound(url);
+    console.log(sound);
   }
+
+  const handleSubmission = () => {
+    const formData = new FormData();
+
+    formData.append("audioFile", selectedFile);
+    fetch("https://enigmatic-badlands-41342.herokuapp.com/v1.0/recognition", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <div>
       {/* <audio src={audioURL} controls />
@@ -47,10 +76,12 @@ function RecordSite() {
         <button onClick={startRecording} type="button">
           Start
         </button>
-        <button onClick={stopRecording} type="button">
+        {/* <button onClick={stopRecording} type="button">
           Stop
-        </button>
+        </button> */}
+        <button onClick={handleSubmission}> Submit</button>
       </div>
+      <ReactPlayer url={sound} />
     </div>
   );
 }

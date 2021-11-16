@@ -1,11 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { AudioFile } from "../../Contexts/AudioFile";
+// import { AudioFile } from "../../Contexts/AudioFile";
 import PopupFailFetch from "../Popup/PopupFailFetch";
 import PopupInfo from "../Popup/PopupInfo";
 
 function UploadSite() {
-  const { selectedFile, setSelectedFile } = useContext(AudioFile);
+  const [selectedFile, setSelectedFile] = useState();
+  // const { selectedFile, setSelectedFile } = useContext(AudioFile);
   const [isFilePicked, setIsFilePicked] = useState(false);
   const [gender, setGender] = useState();
   const [probablility, setProbability] = useState();
@@ -22,7 +23,7 @@ function UploadSite() {
     const formData = new FormData();
 
     formData.append("audioFile", selectedFile);
-    const as = fetch(
+    fetch(
       "https://enigmatic-badlands-41342.herokuapp.com/v1.0/recognition",
       {
         method: "POST",
@@ -43,9 +44,7 @@ function UploadSite() {
         console.log(error);
       });
 
-    if (as.status === 200) {
-      setInfoMessage(true);
-    }
+    
   };
 
   return (
